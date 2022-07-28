@@ -1,0 +1,24 @@
+nav {
+    background-color: #124c91;
+}
+
+
+li:hover, a:hover{
+    background-color: transparent;
+    color: #769ece;
+    cursor: pointer;
+}
+
+a, li {
+    color: #c7e1ff;
+    display: flex;
+    text-indent: 20px;
+    margin-right: 20px;
+    text-decoration: none;
+    
+}
+
+.active {
+    background-color:  rgb(92, 92, 200);
+    border-radius: 5px;
+}

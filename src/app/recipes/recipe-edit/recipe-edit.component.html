@@ -1,0 +1,103 @@
+<div class="row">
+    <div class="col-md-12">
+        <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+                <div class="col-md-12">
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input formControlName="name" type="text" id="name" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="imagePath">Image Url</label>
+                                <input formControlName="imagePath" type="text" id="imagePath" class="form-control" #urlPath>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <img [src]="urlPath" alt="" class="img-responsive">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="description">Description</label>
+                            <textarea formControlName="description" type="text" id="description" rows="4" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div><hr>
+            
+            <div class="row">
+                <div class="col-md-12" >
+                    <button 
+                        type="button" 
+                        class="btn btn-success" 
+                        (click)="onAddIngredient()">Add Ingredient
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" formArrayName="ingredients">
+                    <div *ngIf="!isIngredientListEmpty" class="row">
+                        <div class="col-md-7">
+                            <label for="ing" style="margin-top: 15px;">Ingredient List:</label>
+                        </div>
+                        <div class="col-md-5">
+                            <button 
+                                type="button"
+                                class="btn btn-secondary"
+                                (click)="onClearAllIngs()"
+                                style="margin-left: 190px;">Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row"
+                        *ngFor="let ingredientCtrl of ingControls; let i = index"
+                        [formGroupName]="i"
+                        style="margin-top: 10px;">
+                        <div class="col-md-8">
+                            <input placeholder="ingredient name" id="ing" type="text" class="form-control" formControlName="name">
+                        </div>
+                        <div class="col-md-2">
+                            <input placeholder="count" type="number" class="form-control" formControlName="amount">
+                        </div>
+                        <div class="col-md-2">
+                            <button
+                                class="btn btn-danger"
+                                type="button"
+                                (click)="onIngredientDelete(i)"> X 
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div><hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <button 
+                        type="submit" 
+                        class="btn btn-info"
+                        [disabled]="!recipeForm.valid || isIngredientListEmpty"
+                        style="margin-right: 50px; margin-bottom: 20px;">Save
+                    </button>
+                    <button 
+                        type="button" 
+                        class="btn btn-secondary" 
+                        (click)="onCancel()"
+                        style="margin-bottom: 20px;">Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

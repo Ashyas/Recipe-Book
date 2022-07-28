@@ -1,0 +1,9 @@
+button {
+    margin-top: -3px;
+    background-color: #769ece;
+}
+
+button:hover {
+    background-color: #96beef;
+}
+
