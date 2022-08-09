@@ -1,10 +1,11 @@
-import { Injectable, OnInit } from "@angular/core";
 import { Subject } from "rxjs";
-import { Ingredient } from "../models/ingredient.model";
+import { Injectable, OnInit } from "@angular/core";
+
 import { Recipe } from "../models/recipe.model";
+import { Ingredient } from "../models/ingredient.model";
 import { ShoppingListService } from "./shopping-list.service";
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class RecipeService implements OnInit{
     
     recipeChanged = new Subject<Recipe[]>();

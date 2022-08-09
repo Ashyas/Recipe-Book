@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
+import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
+
 import { AuthService } from "../services/auth.service";
 import { DataStorageService } from "../services/data-storage.service";
 
@@ -18,14 +19,13 @@ export class HeaderComponent implements OnInit, OnDestroy{
         private dataService: DataStorageService,
         private authService: AuthService
     ){}
-
+    
     ngOnInit(): void {
         this.userSub = this.authService.user.subscribe(
             user => {
                 this.isAuthenticated = !!user;
             }
         );
-
     }
     
     onSaveData(){
@@ -40,7 +40,6 @@ export class HeaderComponent implements OnInit, OnDestroy{
         this.isAuthenticated = !this.isAuthenticated;
         this.authService.logout();
     }
-
 
     ngOnDestroy(): void {
         this.userSub.unsubscribe();

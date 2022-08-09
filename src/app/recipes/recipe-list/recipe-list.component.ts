@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RecipeService } from 'src/app/services/recipe.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+
 import { Recipe } from '../../models/recipe.model';
+import { RecipeService } from 'src/app/services/recipe.service';
 
 @Component({
   selector: 'app-recipe-list',

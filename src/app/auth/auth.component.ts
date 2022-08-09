@@ -1,7 +1,8 @@
+import { Observable } from "rxjs";
+import { Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
-import { Observable } from "rxjs";
+
 import { AuthResponseData, AuthService } from "../services/auth.service";
 
 @Component({
@@ -23,25 +24,25 @@ export class AuthComponent implements OnInit{
 
     ngOnInit(): void {
         this.loginForm = new FormGroup({
+            'userName': new FormControl(null),
             'email': new FormControl(null ,[Validators.required, Validators.email]),
             'password': new FormControl(null ,[Validators.required, Validators.minLength(6)])
         });
     }
 
     onSubmit(){
+        
         let authObserver: Observable<AuthResponseData>;
-
+        const userName = this.loginForm.value.userName;
         const email = this.loginForm.value.email;
         const password = this.loginForm.value.password;
-
-        
 
         this.isLoading = true;
 
         if(this.isLoginMode){
             authObserver = this.authServer.logIn(email, password);
         }else{
-            authObserver = this.authServer.signup(email, password);
+            authObserver = this.authServer.signup(userName, email, password);
         }
         authObserver.subscribe(
             resData => {

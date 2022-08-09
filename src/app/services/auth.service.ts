@@ -1,25 +1,27 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { BehaviorSubject, Subject, throwError } from "rxjs";
+import { Injectable } from "@angular/core";
 import {catchError, tap } from "rxjs/operators"
+import { BehaviorSubject, throwError } from "rxjs";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 
 import { User } from "../models/user.model";
+import { environment } from "src/environments/environment";
 
 export interface AuthResponseData {
-    kind: string;
     idToken: string;
     email: string;
     refreshToken: string;
     expiresIn: string;
     localId: string;
+    username?: string;
     registered?: boolean;
 }
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AuthService {
 
     user = new BehaviorSubject<User>(null);
+    isLogged: boolean = false;
     private tokenExpirationTimer: any;
 
     constructor(
@@ -27,9 +29,9 @@ export class AuthService {
         private router: Router
     ){}
 
-    signup(email: string, password: string){
+    signup(userName: string, email: string, password: string){
         return this.http.post<AuthResponseData>(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC7T-9QFjTRlapWGysVlKFMq43kZN8QSzc',
+            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + environment.firebaseAPIKey,
             {
                 email: email,
                 password: password,
@@ -38,6 +40,10 @@ export class AuthService {
             .pipe(
                 catchError(this.handleError), 
                 tap(resData => {
+                    resData.username = userName;
+                    console.log('userName: ' +userName);
+                    console.log('ResData.userName: ' +resData.username);
+                    //console.log('this.user.valu.userName: ' +this.user.value.userName);
                     this.handleAuthentication(resData);
                 }
             )
@@ -46,7 +52,7 @@ export class AuthService {
 
     logIn(email: string, password: string){
         return this.http.post<AuthResponseData>(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC7T-9QFjTRlapWGysVlKFMq43kZN8QSzc',
+            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + environment.firebaseAPIKey,
             {
                 email: email,
                 password: password,
@@ -55,6 +61,7 @@ export class AuthService {
             .pipe(
                 catchError(this.handleError), 
                 tap(resData => {
+                    //resData.username = this.user.value.userName;
                     this.handleAuthentication(resData);
                 }
             )
@@ -62,7 +69,9 @@ export class AuthService {
     }
 
     autoLogin() {
+        this.isLogged = true;
         const userData: {
+            userName: string,
             email: string,
             id: string,
             _token: string,
@@ -73,7 +82,7 @@ export class AuthService {
             return;
         }
 
-        const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+        const loadedUser = new User(userData.userName, userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
         if(loadedUser.token) {
             this.user.next(loadedUser);
             const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
@@ -89,6 +98,7 @@ export class AuthService {
             clearTimeout(this.tokenExpirationTimer);
         }
         this.tokenExpirationTimer = null;
+        this.isLogged = false;
     }
 
     autoLogout(expirationDuration: number) {
@@ -99,10 +109,11 @@ export class AuthService {
 
     private handleAuthentication(resData: AuthResponseData){
         const expirationDate = new Date( new Date().getTime() + +resData.expiresIn * 1000);
-        const user = new User(resData.email,resData.localId,resData.idToken,expirationDate);
+        const user = new User(resData.username, resData.email,resData.localId,resData.idToken,expirationDate);
         this.user.next(user);
         this.autoLogout(+resData.expiresIn * 1000);
         localStorage.setItem('userData', JSON.stringify(user));
+        this.isLogged = true;
     }
 
     private handleError(errorRes : HttpErrorResponse){
@@ -131,5 +142,15 @@ export class AuthService {
                 break;
         }
         return throwError(errorMessage);
+    }
+
+    getUserName(){
+        if (this.user.value.userName){
+            return this.user.value.userName;
+        }
+    }
+
+    getIsLoggedIn(){
+        return this.isLogged;
     }
 }
